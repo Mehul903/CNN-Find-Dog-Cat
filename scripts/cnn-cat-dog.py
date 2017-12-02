@@ -8,3 +8,8 @@ from keras.layers import Dense
 
 ## Initialize CNN:
 classifier = Sequential()
+
+
+## Flow of CNN:
+## Convolution --> Max Pooling --> Flattening --> Full Connection
+classifier.add(Convolution2D(32, 3, 3, input_shape = (64, 64, 3)), activation = 'relu')
