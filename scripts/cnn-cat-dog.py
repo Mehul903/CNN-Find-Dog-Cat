@@ -18,6 +18,12 @@ classifier.add(Convolution2D(32, 3, 3, input_shape = (64, 64, 3), activation = '
 ## Step-2: Max-pooling
 classifier.add(MaxPooling2D(pool_size = (2, 2)))
 
+## Add another convolutional layer:
+## Don't need to 'input_shape' parameter for the layer because keras will understand 
+## that from the previous convolutional layer.
+classifier.add(Convolution2D(32, 3, 3, activation = 'relu'))
+classifier.add(MaxPooling2D(pool_size = (2, 2)))
+
 ## Step-3: Flattening
 classifier.add(Flatten())
 
@@ -54,11 +60,28 @@ test_set = test_datagen.flow_from_directory(
 
 classifier.fit_generator(
             training_set,
-            steps_per_epoch=8000,
-            epochs=10,
+            steps_per_epoch=8000/32,
+            epochs=20,
             validation_data=test_set,
-            validation_steps=2000)
+            validation_steps=2000/32)
 
+
+## Making preiction on a new single observation:
+import numpy as np
+from keras.preprocessing import image
+test_new_obs = image.load_img('../dataset/single_prediction/cat_or_dog_3.jpg', target_size = (64, 64))
+test_new_obs = image.img_to_array(test_new_obs)
+test_new_obs = np.expand_dims(test_new_obs, axis = 0)
+
+## First check the mapping of 1 and 0 to cat and/or dog.
+training_set.class_indices
+
+## Make prediction:
+prediction = classifier.predict(test_new_obs)
+if prediction[0][0] == 1:
+    print ('Prediction is: dog')
+else:
+    print ('Prediction is: cat')
 
 # =============================================================================
 # Some notes about the code and CNN:
